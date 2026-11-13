@@ -2,18 +2,15 @@
 
 import { useState } from "react";
 import { useParams } from "next/navigation";
+import { hitungBMI } from "@/lib/bmi";  //manggil rumus
+import Link from "next/link"; //kl mau ganti nama
 
-function hitungBMI(beratKg, tinggiCm) {
-  const m = tinggiCm / 100;
-  const bmi = beratKg / (m * m);
-
-  let kategori;
-  if (bmi < 18.5) kategori = "Berat badan kurang";
-  else if (bmi < 25) kategori = "Normal";
-  else if (bmi < 30) kategori = "Berat badan berlebih";
-  else kategori = "Obesitas";
-
-  return { bmi: bmi.toFixed(1), kategori };
+//ngasih warna per kategori
+function warnaKategori(kategori) {
+    if (kategori === "Berat badan kurang") return "navy";
+    if (kategori === "Normal") return "green";
+    if (kategori === "Berat badan berlebih") return "goldenrod";
+    return "red";
 }
 
 export default function Page() {
@@ -27,6 +24,12 @@ export default function Page() {
   function handleSubmit(e) {
     e.preventDefault();
     setHasil(hitungBMI(Number.parseFloat(berat), Number.parseFloat(tinggi)));
+  }
+
+  function handleReset(){
+    setBerat("");
+    setTinggi("");
+    setHasil(null);
   }
 
   return (
@@ -67,10 +70,21 @@ export default function Page() {
         <button type="submit" style={{ padding: 8 }}>
           Hitung
         </button>
+
+        {/* masukin handle reset */}
+        <button type="button" onClick={handleReset} style={{ padding: 8 }}>
+          Reset
+        </button>
+
+        {/* manggil link */}
+        <p style={{ backgroundColor: "pink", padding:5, borderRadius:5}}>
+            <Link href="/">Bukan kamu? Ganti nama</Link>
+        </p>
       </form>
 
       {hasil && (
-        <p style={{ marginTop: 16 }}>
+        //manggil warna
+        <p style={{ marginTop: 16, color: warnaKategori(hasil.kategori) }}>
           BMI kamu: <strong>{hasil.bmi}</strong> ({hasil.kategori})
         </p>
       )}
